@@ -22,4 +22,6 @@ A cozy fishing idle game. Tap to cast, mash to reel in, try not to lose the lege
 
 ## Play
 
+> **Best played** by adding to your home screen (Android: Chrome/Firefox/Brave menu → "Add to Home Screen"). Playing in a browser tab may have layout issues on mobile.
+
 https://ilovealienz.github.io/fwishgame
