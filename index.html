@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#060e1a">
+  <link rel="manifest" href="manifest.json">
+  <title>Fwish</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div id="toast" class="toast"></div>
+
+<!-- SCENE -->
+<div class="scene" id="scene">
+  <div class="scene-stars"></div>
+  <div class="scene-trees">
+    <svg viewBox="0 0 800 200" preserveAspectRatio="xMidYMax meet" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="20,200 75,60 130,200"    fill="#081408"/>
+      <polygon points="80,200 145,30 210,200"   fill="#0a180a"/>
+      <polygon points="170,200 215,90 260,200"  fill="#081408" opacity=".85"/>
+      <polygon points="230,200 262,120 294,200" fill="#0a180a" opacity=".55"/>
+      <polygon points="500,200 535,115 570,200" fill="#0a180a" opacity=".55"/>
+      <polygon points="555,200 610,42 665,200"  fill="#081408"/>
+      <polygon points="635,200 688,68 741,200"  fill="#0a180a"/>
+      <polygon points="710,200 752,88 794,200"  fill="#081408" opacity=".85"/>
+    </svg>
+  </div>
+  <div class="wx-overlay"></div>
+
+  <div class="topbar">
+    <span class="brand">Fwish</span>
+    <span id="prestige-tag" class="prestige-tag" style="display:none"></span>
+    <span class="tstat" id="money-val">🪙 10</span>
+    <span class="tstat" id="bucket-val">🪣 0/8</span>
+    <span class="tstat" id="earned-val">📦 0</span>
+    <div id="active-buffs" class="active-buffs"></div>
+    <div class="topbar-right">
+      <span id="weather-display" class="weather-chip">🌙 Clear</span>
+      <button id="autosell-toggle" class="autosell-btn on" onclick="toggleAutosell()">💰 ON</button>
+      <button class="settings-btn" onclick="openSettings()">⚙</button>
+    </div>
+  </div>
+
+  <div class="scene-tap" onclick="mashClick()">
+    <div class="moon" id="moon"></div>
+    <div class="fish-sil" id="fish-silhouette">
+      <svg viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="52" cy="30" rx="38" ry="18" fill="currentColor"/>
+        <path d="M88 30 L110 14 L105 30 L110 46 Z" fill="currentColor"/>
+        <ellipse cx="30" cy="26" rx="5" ry="5" fill="rgba(0,0,0,.4)"/>
+        <path d="M52 14 Q60 8 68 14" stroke="currentColor" stroke-width="2" fill="none" opacity=".4"/>
+        <path d="M52 46 Q60 52 68 46" stroke="currentColor" stroke-width="2" fill="none" opacity=".4"/>
+      </svg>
+    </div>
+    <div class="water-wrap">
+      <div class="water-body">
+        <div class="water-shimmer"></div>
+        <div class="water-glow"></div>
+        <div class="water-line"></div>
+        <div id="ripples"></div>
+      </div>
+    </div>
+    <div class="float-wrap" id="float-wrap">
+      <div class="float-line" id="float-line"></div>
+      <div class="float idle" id="float">
+        <div class="float-body">
+          <div class="ft"></div><div class="fb"></div>
+          <div class="fr"></div><div class="fs"></div>
+          <div class="fg"></div>
+        </div>
+      </div>
+    </div>
+    <div class="scene-hint" id="water-hint">tap to cast</div>
+    <div class="loc-label" id="loc-label">Millhaven Pond</div>
+  </div>
+</div>
+
+<!-- MASH BAR -->
+<div class="mash-wrap" onclick="mashClick()">
+  <div class="mash-track" id="mash-bar">
+    <div class="mash-fill" id="mash-fill"></div>
+    <div class="mash-label" id="mash-label">TAP TO CAST</div>
+  </div>
+</div>
+
+<!-- MOBILE LOG (hidden on desktop) -->
+<div class="mob-log"><div class="log" id="log"></div></div>
+
+<!-- MOBILE PANEL (hidden on desktop, slides up) -->
+<div class="mob-panel" id="panel">
+  <div class="panel-pip"></div>
+  <div class="panel-hdr">
+    <span class="panel-title" id="panel-title">Bucket</span>
+    <button class="panel-x" onclick="closePanel()">✕</button>
+  </div>
+  <div class="panel-body" id="panel-content"></div>
+</div>
+<div class="backdrop" id="panel-backdrop" onclick="closePanel()"></div>
+
+<!-- DESKTOP LOG SIDEBAR (hidden on mobile) -->
+<div class="dt-log" id="dt-log">
+  <div class="log" id="desktop-log"></div>
+</div>
+
+<!-- DESKTOP PANEL (hidden on mobile, full width above nav) -->
+<div class="dt-panel" id="dt-panel">
+  <div class="dt-panel-hdr">
+    <span class="panel-title" id="dt-panel-title">Bucket</span>
+  </div>
+  <div class="dt-panel-body" id="dt-panel-content"></div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="nav-btn active" data-tab="bucket"   onclick="navTap(this,'bucket')"  >🪣<span>Bucket</span></button>
+  <button class="nav-btn"        data-tab="display"  onclick="navTap(this,'display')" >🖼<span>Display</span></button>
+  <button class="nav-btn"        data-tab="shop"     onclick="navTap(this,'shop')"    >🔧<span>Shop</span></button>
+  <button class="nav-btn"        data-tab="auto"     onclick="navTap(this,'auto')"    >⟳<span>Auto</span></button>
+  <button class="nav-btn"        data-tab="skills"   onclick="navTap(this,'skills')"  >📈<span>Skills</span></button>
+  <button class="nav-btn"        data-tab="charms"   onclick="navTap(this,'charms')"  >🍀<span>Charms</span></button>
+  <button class="nav-btn"        data-tab="buffs"    onclick="navTap(this,'buffs')"   >✨<span>Buffs</span></button>
+  <button class="nav-btn"        data-tab="places"   onclick="navTap(this,'places')"  >🗺<span>Places</span></button>
+  <button class="nav-btn"        data-tab="logbook"  onclick="navTap(this,'logbook')" >📖<span>Log</span></button>
+  <button class="nav-btn"        data-tab="achieve"  onclick="navTap(this,'achieve')" >🏆<span>Awards</span></button>
+  <button class="nav-btn"        data-tab="records"  onclick="navTap(this,'records')" >🥇<span>Records</span></button>
+  <button class="nav-btn"        data-tab="prestige" onclick="navTap(this,'prestige')">♾<span>Prestige</span></button>
+</nav>
+
+<!-- SETTINGS -->
+<div id="settings-overlay" class="settings-overlay" onclick="closeSettings(event)">
+  <div class="settings-modal">
+    <div class="settings-title">⚙ Settings</div>
+    <div class="settings-section">
+      <div class="settings-label">Save Data</div>
+      <button class="settings-btn-action" onclick="uiExportSave()">⬇ Download Save</button>
+      <button class="settings-btn-action" onclick="uiImportSave()">⬆ Import Save</button>
+      <input type="file" id="import-file-input" accept=".fwish,.json,.txt" style="display:none" onchange="uiImportFile(event)">
+    </div>
+    <div class="settings-section">
+      <div class="settings-label">Danger Zone</div>
+      <button class="settings-btn-action danger" onclick="uiReset()">↺ Reset Everything</button>
+      <div class="settings-warn">Deletes all progress including prestige and records.</div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-label">About</div>
+      <div class="settings-about">Fwish Game · cozy fishing idle<br>Save key: <code>fwish_v1</code></div>
+    </div>
+    <button class="settings-close" onclick="closeSettings()">✕ Close</button>
+  </div>
+</div>
+
+<script src="data/fish.js"></script>
+<script src="data/charms.js"></script>
+<script src="data/upgrades.js"></script>
+<script src="data/achievements.js"></script>
+<script src="core/state.js"></script>
+<script src="core/fishing.js"></script>
+<script src="core/game.js"></script>
+<script src="ui/render.js"></script>
+<script>
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+  window.addEventListener('DOMContentLoaded', () => { initStars(); initGame(); });
+</script>
+</body>
+</html>
