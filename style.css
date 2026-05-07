@@ -4,7 +4,7 @@
 :root{
   --nav-h:   56px;
   --mash-h:  48px;
-  --log-h:   clamp(90px,20vh,220px);
+  --log-h:   clamp(130px,25vh,280px);
   --panel-h: 380px;
   --sidebar: 380px;
   --night:   #060e1a; --night2: #091525;
@@ -39,7 +39,7 @@ body{display:flex;flex-direction:column;height:100vh;padding-bottom:var(--nav-h)
 
 .mash-wrap{height:var(--mash-h);background:var(--night2);border-top:1px solid rgba(42,188,176,.12);padding:8px 14px;cursor:pointer;flex-shrink:0;display:flex;align-items:center}
 
-.mob-log{height:var(--log-h);background:var(--surf);flex-shrink:0;overflow:hidden;border-bottom:1px solid rgba(0,0,0,.3)}
+.mob-log{height:var(--log-h);background:var(--surf);flex-shrink:0;overflow:hidden;border-bottom:1px solid rgba(0,0,0,.3);padding-bottom:4px}
 
 /* desktop-only elements hidden on mobile */
 .dt-log{display:none}
